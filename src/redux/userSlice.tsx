@@ -18,8 +18,12 @@ export const userSlice = createSlice({
   name: "userSlice",
   initialState,
   reducers: {
-    setIsLoggedIn: () => {},
-    setStoreValues: () => {},
+    setIsLoggedIn: (state: any, action: any) => {
+      state.isLoggedIn = action.payload;
+    },
+    setStoreValues: (state: any, action: any) => {
+      state[action.payload.key] = action.payload.values;
+    },
   },
 });
 
