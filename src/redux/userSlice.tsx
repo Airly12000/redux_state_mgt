@@ -1,10 +1,10 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface Props {
   firstTime: boolean;
   isLoggedIn: boolean;
-  user: object;
-  messages: any[];
+  user: any;
+  messages: any;
 }
 
 const initialState: Props = {
@@ -18,11 +18,14 @@ export const userSlice = createSlice({
   name: "userSlice",
   initialState,
   reducers: {
-    setIsLoggedIn: (state: any, action: any) => {
+    setIsLoggedIn: (state: any, action: PayloadAction<boolean>) => {
       state.isLoggedIn = action.payload;
     },
-    setStoreValues: (state: any, action: any) => {
-      state[action.payload.key] = action.payload.values;
+    setStoreValues: (
+      state: any,
+      action: PayloadAction<{ key: string; value: object }>
+    ) => {
+      state[action.payload.key] = action.payload.value;
     },
   },
 });
