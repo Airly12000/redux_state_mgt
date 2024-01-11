@@ -5,18 +5,9 @@ import { setIsLoggedIn } from "../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
-  const isLoggedIn = useSelector((state: RootState) => state.isLoggedIn);
-  const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isLoggedIn) navigate("/");
-  });
-
   return (
-    <div>
+    <div className="col">
       <h1>Dashboard</h1>
-      <button onClick={() => dispatch(setIsLoggedIn(false))}>Logout</button>
     </div>
   );
 };

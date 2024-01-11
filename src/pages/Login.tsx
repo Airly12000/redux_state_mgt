@@ -11,13 +11,12 @@ storedInfo = JSON.parse(storedInfo);
 const Login = () => {
   const [logReg, setLogReg] = useState<String>("login");
   const [formInfo, setFormInfo] = useState({
-    name: storedInfo.name || "",
-    username: storedInfo.username || "",
-    password: storedInfo.password || "",
+    name: storedInfo ? storedInfo.name : "",
+    username: storedInfo ? storedInfo.username : "",
+    password: storedInfo ? storedInfo.password : "",
   });
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const isLoggedIn = useSelector((state: RootState) => state.isLoggedIn);
 
   const handleChange = (event: any) => {
     const name = event.target.name;
@@ -36,17 +35,9 @@ const Login = () => {
     event.preventDefault();
     localStorage.setItem("user", JSON.stringify(formInfo));
     dispatch(setIsLoggedIn(true));
-    navigate("/dashboard");
+    navigate("/user");
   };
 
-  useEffect(() => {
-    console.log(isLoggedIn);
-    if (isLoggedIn) navigate("/dashboard");
-  });
-
-  // useEffect(() => {
-  //   dispatch(setStoreValues({ key: "user", value: {} }));
-  // });
   return (
     <div className="container-fluid vh-100 d-flex justify-content-center align-items-center">
       <div className="container-fluid h-50 w-50">
