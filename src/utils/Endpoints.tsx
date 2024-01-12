@@ -1,5 +1,5 @@
 export const endpoints = {
-  login: "login",
-  logout: "logout",
+  login: "users/login",
+  logout: "users/logout",
   messages: "messages",
 };
