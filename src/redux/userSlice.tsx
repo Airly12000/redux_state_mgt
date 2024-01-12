@@ -23,7 +23,7 @@ export const userSlice = createSlice({
     },
     setStoreValues: (
       state: any,
-      action: PayloadAction<{ key: string; value: object }>
+      action: PayloadAction<{ key: string; value: any }>
     ) => {
       state[action.payload.key] = action.payload.value;
     },
