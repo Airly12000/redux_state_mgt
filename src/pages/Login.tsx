@@ -4,7 +4,10 @@ import { setIsLoggedIn, setStoreValues } from "../redux/userSlice";
 import { AppDispatch } from "../redux/store";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../redux/store";
+import Requests from "../utils/Requests";
+import { endpoints } from "../utils/Endpoints";
 
+const errorHandler = (error: any) => console.log(`Error: ${error}`);
 let storedInfo: any = localStorage.getItem("user");
 storedInfo = JSON.parse(storedInfo);
 
@@ -31,11 +34,18 @@ const Login = () => {
     }
   };
 
-  const handleSubmit = (event: any) => {
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
-    localStorage.setItem("user", JSON.stringify(formInfo));
-    dispatch(setIsLoggedIn(true));
-    navigate("/user");
+    await Requests.post(endpoints.login, formInfo)
+      .then((response: any) => {
+        if (!response.data.message) {
+          dispatch(setStoreValues({ key: "user", value: response.data.user }));
+          dispatch(setIsLoggedIn(true));
+          localStorage.setItem("user", JSON.stringify(formInfo));
+        }
+        // navigate("/user");
+      })
+      .catch(errorHandler);
   };
 
   return (
