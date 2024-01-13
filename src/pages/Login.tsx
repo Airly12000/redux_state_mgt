@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsLoggedIn, setStoreValues } from "../redux/userSlice";
 import { AppDispatch } from "../redux/store";
-import { useNavigate } from "react-router-dom";
-import { RootState } from "../redux/store";
+// import { useNavigate } from "react-router-dom";
+// import { RootState } from "../redux/store";
 import Requests from "../utils/Requests";
 import { endpoints } from "../utils/Endpoints";
 
@@ -19,7 +19,7 @@ const Login = () => {
     password: storedInfo ? storedInfo.password : "",
   });
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleChange = (event: any) => {
     const name = event.target.name;
@@ -34,8 +34,7 @@ const Login = () => {
     }
   };
 
-  const handleSubmit = async (event: any) => {
-    event.preventDefault();
+  const login = async () => {
     await Requests.post(endpoints.login, formInfo)
       .then((response: any) => {
         if (!response.data.message) {
@@ -43,14 +42,34 @@ const Login = () => {
           dispatch(setIsLoggedIn(true));
           localStorage.setItem("user", JSON.stringify(formInfo));
         }
-        // navigate("/user");
       })
       .catch(errorHandler);
   };
 
+  const register = async () => {
+    await Requests.post(endpoints.register, formInfo)
+      .then((response: any) => {
+        if (!response.data.message) {
+          dispatch(setStoreValues({ key: "user", value: response.data.user }));
+          dispatch(setIsLoggedIn(true));
+          localStorage.setItem("user", JSON.stringify(formInfo));
+        }
+      })
+      .catch(errorHandler);
+  };
+
+  const handleSubmit = (event: any) => {
+    event.preventDefault();
+    if (logReg === "login") {
+      login();
+    } else {
+      register();
+    }
+  };
+
   return (
     <div className="container-fluid vh-100 d-flex justify-content-center align-items-center">
-      <div className="container-fluid h-50 w-50">
+      <div className="loginContainer">
         <div className="row h-100 w-100 border rounded">
           <div className="col w-100 h-100 px-0">
             <img
@@ -62,7 +81,7 @@ const Login = () => {
           <div className="col d-flex align-items-center flex-column pt-3 position-relative">
             {logReg !== "login" ? (
               <form action="" className="form w-75">
-                <h3 className="text-center mb-1">Register</h3>
+                <h3 className="text-center mb-0">Register</h3>
                 <div className="d-flex flex-column">
                   <label htmlFor="Name" className="my-2">
                     Name{" "}
@@ -89,7 +108,7 @@ const Login = () => {
                     id="username"
                   />
                 </div>
-                <div className="d-flex flex-column mb-3">
+                <div className="d-flex flex-column mb-4">
                   <label htmlFor="password" className="my-2">
                     Password{" "}
                   </label>
