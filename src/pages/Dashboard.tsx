@@ -9,11 +9,12 @@ const errorHandler = (error: any) => console.log(`Error: ${error}`);
 
 const Dashboard = () => {
   const messages = useSelector((state: RootState) => state.messages);
+  const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch<AppDispatch>();
   const [message, setMessage] = useState("");
 
   const getMessages = async () => {
-    await Requests.get(endpoints.messages)
+    await Requests.post(endpoints.messages, { username: user.username })
       .then((response) => {
         dispatch(
           setStoreValues({ key: "messages", value: response.data.messages })
@@ -24,14 +25,18 @@ const Dashboard = () => {
 
   const handleAddMessage = async (event: any) => {
     event.preventDefault();
-    await Requests.post(endpoints.messages + "/post")
+    await Requests.post(endpoints.messages + "/post", {
+      message: message,
+      username: user.username,
+    })
       .then((response) => {})
       .catch(errorHandler);
+    window.location.reload();
   };
 
   useEffect(() => {
-    // getMessages();
-  });
+    getMessages();
+  }, []);
 
   return (
     <div className="col">
@@ -39,7 +44,8 @@ const Dashboard = () => {
       <div className="row border p-3">
         <div className="col">
           {messages &&
-            messages.map((message: any, index: any) => {
+            messages.map((item: any, index: any) => {
+              const { message } = item;
               return (
                 <div className="col" key={index}>
                   {message}
