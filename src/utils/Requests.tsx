@@ -10,9 +10,21 @@ const Requests = axios.create({
 
 const refreshToken = async () => {
   const token = store.getState().user.refreshToken;
-  await Requests.post("testRef", { token: token })
+  await axios
+    .post(
+      "http://localhost:5000/testRef",
+      { token: token },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
     .then((response) => {
       if (response?.data?.token) {
+        axios.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${response.data.token}`;
         store.dispatch(
           setStoreValues({
             key: "user",
@@ -36,27 +48,27 @@ Requests.interceptors.request.use(
   }
 );
 
-Requests.interceptors.response.use(undefined, (err) => {
-  const { config, message, response } = err;
-  // console.log("=======", config?.url);
-  // console.log("=======", response?.data, response?.status);
-  if (response?.status === 401) {
-    refreshToken();
+Requests.interceptors.response.use(
+  async (response) => {
+    return response;
+  },
+  async (error) => {
+    if (error?.response?.status === 401) {
+      const originalRequest = error.config;
+      originalRequest._retry = true;
+      await refreshToken();
+      // const access_token = await axios.post('', {
+      // 	refresh: localStorage.getItem('refreshToken'),
+      // });
+      // if (access_token?.status === 200) {
+      // 	console.log(access_token?.data);
+      // 	localStorage.setItem('token', access_token?.data);
+      // 	originalRequest.headers.Authorization = access_token?.data;
+      // }
+      return Requests(originalRequest);
+    }
+    return Promise.reject(error);
   }
-
-  if (response?.data?.errors) {
-    return Promise.reject(response?.data?.errors?.[0]?.msg);
-  }
-
-  if (response?.data) {
-    return Promise.reject(response?.data);
-  }
-
-  if (!(message.includes("timeout") || message.includes("Network Error"))) {
-    return Promise.reject(err);
-  }
-
-  return Promise.resolve(response);
-});
+);
 
 export default Requests;
